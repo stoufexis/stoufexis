@@ -2,6 +2,9 @@ name: Continuous Integration
 
 on:
   push:
+  # Schedule a run to include any updates in a repo affecting the README, like new stars, changed description etc
+  schedule:
+    - cron: "30 8,20 * * *"
 
 jobs:
   build:
