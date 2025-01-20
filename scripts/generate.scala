@@ -69,7 +69,7 @@ object Main extends IOApp.Simple:
               cfg     <- loadConfig(cPath)
               prelude <- loadLines(pPath)
               pins    <- cfg.pins.flatTraverse(pin(cfg.base_api_url, _, client))
-              _       <- generateFile(rPath, prelude ++ pins)
+              _       <- generateFile(rPath, prelude ++ ("" :: pins))
             yield ExitCode.Success
 
         case args =>
