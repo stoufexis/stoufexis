@@ -1,0 +1,27 @@
+name: Continuous Integration
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout current branch (full)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup scala-cli
+        uses: VirtusLab/scala-cli-setup@v1.5
+
+      - name: Generate README
+        run: scala-cli ./scripts/generate.scala
+        env:
+          README_PATH: ./README.md
+          CONFIG_PATH: ./scripts/config.json
+          PRELUDE_PATH: ./scripts/prelude.md
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
