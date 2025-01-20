@@ -35,10 +35,11 @@ def pin(base: String, repo: String, client: Client[IO]): IO[List[String]] =
     langs     <- client.expect[Json](repo.languages_url)
     langsList <- IO.fromOption(langs.asObject.map(_.keys.toList))(jsonObError)
   yield List(
-    s"* **[${repo.name}](${repo.html_url})**",
-    s"    * ${repo.description}",
-    s"    * ${langsList.take(5).mkString(", ")}",
-    s"    * :star:${repo.stargazers_count}",
+    s"**[${repo.name}](${repo.html_url})**",
+    s"* ${repo.description}",
+    s"* ${langsList.take(5).mkString(", ")}",
+    s"* :star:${repo.stargazers_count}",
+    ""
   )
 
 def generateFile(path: Path, lines: List[String]): IO[Unit] =
