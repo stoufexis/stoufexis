@@ -30,9 +30,9 @@ def pin(base: String, repo: String, client: Client[IO]): IO[List[String]] =
   client.expect[Repo](base + repo).map: repo =>
     List(
       s"* **[${repo.name}](${repo.html_url})**",
-      s"    * **Description**: ${repo.description}",
-      s"    * **Primary Language**: ${repo.language}",
-      s"    * **Stars**: ${repo.stargazers_count}",
+      s"    * ${repo.description}",
+      s"    * ${repo.language}",
+      s"    * :star: ${repo.stargazers_count}",
     )
 
 def generateFile(path: Path, lines: List[String]): IO[Unit] =
