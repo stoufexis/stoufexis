@@ -16,7 +16,7 @@ import cats.effect.std.Env
 
 case class Config(base_api_url: String, pins: List[String]) derives Codec
 
-case class Repo(name: String, html_url: String, description: String, language: String, stargazers_count: Int) derives Codec
+case class Repo(name: String, html_url: String, description: String, languages_url: String, stargazers_count: Int) derives Codec
 
 given EntityDecoder[IO, Repo] = jsonOf
 
@@ -27,13 +27,19 @@ def loadConfig(path: Path): IO[Config] =
   yield cfg
 
 def pin(base: String, repo: String, client: Client[IO]): IO[List[String]] =
-  client.expect[Repo](base + repo).map: repo =>
-    List(
-      s"* **[${repo.name}](${repo.html_url})**",
-      s"    * ${repo.description}",
-      s"    * ${repo.language}",
-      s"    * :star: ${repo.stargazers_count}",
-    )
+  val jsonObError: Exception =
+    RuntimeException("Unexpected value for languages: was not an object")
+
+  for
+    repo      <- client.expect[Repo](base + repo)
+    langs     <- client.expect[Json](repo.languages_url)
+    langsList <- IO.fromOption(langs.asObject.map(_.keys.toList))(jsonObError)
+  yield List(
+    s"* **[${repo.name}](${repo.html_url})**",
+    s"    * ${repo.description}",
+    s"    * ${langsList.take(5).mkString(", ")}",
+    s"    * :star:${repo.stargazers_count}",
+  )
 
 def generateFile(path: Path, lines: List[String]): IO[Unit] =
   Stream
