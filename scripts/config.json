@@ -4,8 +4,11 @@
     "raft",
     "kafka-automata",
     "subtub",
-    "caloree-cli",
     "Querypal",
-    "envy"
+    "caloree-cli",
+    "caloree-server",
+    "caloree-database",
+    "envy",
+    "transactional"
   ]
 }

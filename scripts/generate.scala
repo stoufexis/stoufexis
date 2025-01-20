@@ -16,7 +16,7 @@ import cats.effect.std.Env
 
 case class Config(base_api_url: String, pins: List[String]) derives Codec
 
-case class Repo(full_name: String, html_url: String, description: String) derives Codec
+case class Repo(name: String, html_url: String, description: String, language: String, stargazers_count: Int) derives Codec
 
 given EntityDecoder[IO, Repo] = jsonOf
 
@@ -26,9 +26,14 @@ def loadConfig(path: Path): IO[Config] =
     cfg    <- IO.fromEither(parse(string).flatMap(_.as[Config]))
   yield cfg
 
-def pinLine(base: String, repo: String, client: Client[IO]): IO[String] =
+def pin(base: String, repo: String, client: Client[IO]): IO[List[String]] =
   client.expect[Repo](base + repo).map: repo =>
-    s"* [${repo.full_name}](${repo.html_url}): ${repo.description}"
+    List(
+      s"* **[${repo.name}](${repo.html_url})**",
+      s"    * **Description**: ${repo.description}",
+      s"    * **Primary Language**: ${repo.language}",
+      s"    * **Stars**: ${repo.stargazers_count}",
+    )
 
 def generateFile(path: Path, lines: List[String]): IO[Unit] =
   Stream
@@ -42,8 +47,6 @@ def loadLines(path: Path): IO[List[String]] =
 
 object Main extends IOApp.Simple:
   def run: IO[Unit] =
-
-
     Env[IO]
       .get("README_PATH")
       .product(Env[IO].get("CONFIG_PATH"))
@@ -58,7 +61,7 @@ object Main extends IOApp.Simple:
             for
               cfg     <- loadConfig(cPath)
               prelude <- loadLines(pPath)
-              pins    <- cfg.pins.traverse(pinLine(cfg.base_api_url, _, client))
+              pins    <- cfg.pins.flatTraverse(pin(cfg.base_api_url, _, client))
               _       <- generateFile(rPath, prelude ++ pins)
             yield ExitCode.Success
 
