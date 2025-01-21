@@ -73,4 +73,4 @@ object Main extends IOApp.Simple:
             yield ExitCode.Success
 
         case args =>
-          IO.raiseError(RuntimeException("environment variable README_PATH or CONFIG_PATH not defined"))
+          IO.raiseError(RuntimeException("an environment variable is missing"))
