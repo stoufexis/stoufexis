@@ -52,12 +52,9 @@ def loadLines(path: Path): IO[List[String]] =
 
 object Main extends IOApp.Simple:
   def run: IO[Unit] =
-    Env[IO]
-      .get("README_PATH")
-      .product(Env[IO].get("CONFIG_PATH"))
-      .product(Env[IO].get("PRELUDE_PATH"))
-      .flatMap:
-        case ((Some(rPathStr), Some(cPathStr)), Some(pPathStr)) =>
+    (Env[IO].get("README_PATH"), Env[IO].get("CONFIG_PATH"), Env[IO].get("PRELUDE_PATH"))
+      .flatMapN:
+        case (Some(rPathStr), Some(cPathStr), Some(pPathStr)) =>
           EmberClientBuilder.default[IO].build.use: client =>
             val rPath = Path(rPathStr)
             val cPath = Path(cPathStr)
