@@ -37,7 +37,6 @@ def pin(base: String, repo: String, client: Client[IO]): IO[List[String]] =
   yield List(
     s"* **[${repo.name}](${repo.html_url})**: ${repo.description}",
     s"  * ${langsList.take(5).mkString(", ")}",
-    s"  * :star:${repo.stargazers_count}",
     ""
   )
 
