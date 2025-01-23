@@ -5,7 +5,7 @@ on:
 
   # Schedule a run to include any updates in a repo affecting the README, like new stars, changed description etc
   schedule:
-    - cron: "30 6,14,22 * * *"
+    - cron: "30 8 * * *"
 
   # Enable manual trigger
   workflow_dispatch:
