@@ -13,10 +13,19 @@ import org.http4s.circe.{given, *}
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.*
 import cats.effect.std.Env
+import java.time.*
 
 case class Config(base_api_url: String, pins: List[String]) derives Codec
 
-case class Repo(name: String, html_url: String, description: String, languages_url: String, stargazers_count: Int) derives Codec
+case class Repo(
+  name             : String, 
+  html_url         : String, 
+  description      : String, 
+  languages_url    : String, 
+  stargazers_count : Int, 
+  created_at       : ZonedDateTime, 
+  pushed_at        : ZonedDateTime
+) derives Codec
 
 given EntityDecoder[IO, Repo] = jsonOf
 
@@ -36,7 +45,7 @@ def pin(base: String, repo: String, client: Client[IO]): IO[List[String]] =
     langsList <- IO.fromOption(langs.asObject.map(_.keys.toList))(jsonObError)
   yield List(
     s"* **[${repo.name}](${repo.html_url})**: ${repo.description}",
-    s"  * ${langsList.take(5).mkString(", ")}",
+    s"  * ${langsList.take(5).mkString(", ")} | ${YearMonth.from(repo.created_at)} - ${YearMonth.from(repo.pushed_at)}",
     ""
   )
 
