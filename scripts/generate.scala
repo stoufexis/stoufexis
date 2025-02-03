@@ -15,7 +15,7 @@ import org.http4s.*
 import cats.effect.std.Env
 import java.time.*
 
-case class Config(base_api_url: String, pins: List[String]) derives Codec
+case class Config(base_api_url: String, pins: List[String], source_at: String) derives Codec
 
 case class Repo(
   name             : String, 
@@ -73,7 +73,7 @@ object Main extends IOApp.Simple:
               cfg     <- loadConfig(cPath)
               prelude <- loadLines(pPath)
               pins    <- cfg.pins.flatTraverse(pin(cfg.base_api_url, _, client))
-              _       <- generateFile(rPath, prelude ++ ("" :: pins))
+              _       <- generateFile(rPath, prelude ++ ("" :: pins) :+ s"_[Source Code](${cfg.source_at})_")
             yield ExitCode.Success
 
         case args =>

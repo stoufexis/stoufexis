@@ -11,5 +11,6 @@
     "caloree-database",
     "envy",
     "transactional"
-  ]
+  ],
+  "source_at": "https://github.com/stoufexis/stoufexis/blob/main/scripts/generate.scala"
 }
