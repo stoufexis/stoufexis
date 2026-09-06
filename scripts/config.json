@@ -9,7 +9,6 @@
     "Querypal",
     "caloree-cli",
     "caloree-server",
-    "caloree-database",
     "envy",
     "transactional"
   ],
